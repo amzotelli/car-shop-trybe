@@ -1,26 +1,10 @@
-import express, { Router } from 'express';
-import connectToDatabase from './connection';
+import App from './app';
+import CarRouter from './routes/Router';
 
-class App {
-  private app: express.Application;
+const server = new App();
 
-  constructor() {
-    this.app = express();
-    this.app.use(express.json());
-  }
+const carRouter = new CarRouter();
 
-  public startServer(port = 3001) {
-    connectToDatabase();
-    const actualPort = process.env.PORT || port;
-    return this.app.listen(
-      actualPort,
-      () => console.log('Estamos online na porta: ', actualPort),
-    );
-  }
+server.addRouter(carRouter.router);
 
-  public addRouter(router: Router) {
-    this.app.use(router);
-  }
-}
-
-export default App;
+export default server;
