@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 import connectToDatabase from './connection';
-// primeiro commit 
+
 class App {
   public app: express.Application;
 
