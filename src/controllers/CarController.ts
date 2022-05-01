@@ -24,9 +24,8 @@ class CarController extends Controller<Car> {
     req: RequestWithBody<Car>,
     res: Response<Car | ResponseError>,
   ): Promise<typeof res> => {
-    const { body } = req;
     try {
-      const car = await this.service.create(body);
+      const car = await this.service.create(req.body);
       if (!car) {
         return res.status(500).json({ error: this.errors.internal });
       }
@@ -45,7 +44,7 @@ class CarController extends Controller<Car> {
   ): Promise<typeof res> => {
     try {
       const car = await this.service.read();
-      return res.json(car);
+      return res.status(200).json(car);
     } catch (err) {
       return res.status(500).json({ error: this.errors.internal });
     }
@@ -58,10 +57,9 @@ class CarController extends Controller<Car> {
     const { id } = req.params;
     try {
       const car = await this.service.readOne(id);
-      return car
-        ? res.json(car)
-        : res.status(404).json({ error: this.errors.notFound });
-    } catch (error) {
+      if (!car) return res.status(500).json({ error: this.errors.notFound });
+      return res.status(200).json(car);
+    } catch (err) {
       return res.status(500).json({ error: this.errors.internal });
     }
   };
@@ -71,13 +69,11 @@ class CarController extends Controller<Car> {
     res: Response<Car | ResponseError>,
   ): Promise<typeof res> => {
     const { id } = req.params;
-    const { body } = req;
     try {
-      const car = await this.service.update(id, body);
-      return car
-        ? res.json(car)
-        : res.status(404).json({ error: this.errors.notFound });
-    } catch (error) {
+      const car = await this.service.update(id, req.body);
+      if (!car) return res.status(404).json({ error: this.errors.notFound });
+      return res.status(200).json(car);
+    } catch (err) {
       return res.status(500).json({ error: this.errors.internal });
     }
   };
@@ -89,10 +85,9 @@ class CarController extends Controller<Car> {
     const { id } = req.params;
     try {
       const car = await this.service.delete(id);
-      return car
-        ? res.json(car)
-        : res.status(404).json({ error: this.errors.notFound });
-    } catch (error) {
+      if (!car) return res.status(404).json({ error: this.errors.notFound });
+      return res.status(200).json(car);
+    } catch (err) {
       return res.status(500).json({ error: this.errors.internal });
     }
   };
