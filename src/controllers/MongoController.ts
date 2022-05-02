@@ -58,8 +58,13 @@ abstract class Controller<T> {
     res: Response<T | ResponseError>,
   ) => {
     try {
+      if (req.params.id.length < 24) {
+        return res.status(400)
+          .json({ error: 'Id must have 24 hexadecimal characters' });
+      }
       const car = await this.service.readOne(req.params.id);
       if (!car) return res.status(404).json({ error: this.errors.notFound });
+      
       return res.status(200).json(car);
     } catch (err) {
       return res.status(500).json({ error: this.errors.internal });
