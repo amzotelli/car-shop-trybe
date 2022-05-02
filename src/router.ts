@@ -2,7 +2,7 @@ import { Router } from 'express';
 import MongoController from './controllers/MongoController';
 
 class CustomRouter<T> {
-  public router: Router;
+  private router: Router;
 
   constructor() {
     this.router = Router();
