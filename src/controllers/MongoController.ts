@@ -75,12 +75,15 @@ abstract class Controller<T> {
     req: Request<{ id: string; }>,
     res: Response<T | ResponseError>,
   ) => {
+    const { id } = req.params;
+    if (id.length !== 24) {
+      return res.status(400)
+        .json({ error: 'Id must have 24 hexadecimal characters' });
+    }
     try {
-      const car = await this.service.update(req.params.id, req.body);
+      const { body } = req;
+      const car = await this.service.update(id, body);
       if (!car) return res.status(404).json({ error: this.errors.notFound });
-      if ('error' in car) {
-        return res.status(400).json({ error: this.errors.badRequest });
-      }
       return res.status(200).json(car);
     } catch (err) {
       return res.status(500).json({ error: this.errors.internal });
@@ -94,7 +97,7 @@ abstract class Controller<T> {
     try {
       const car = await this.service.delete(req.params.id);
       if (!car) return res.status(404).json({ error: this.errors.notFound });
-      return res.status(200).json(car);
+      return res.status(204).end();
     } catch (err) {
       return res.status(500).json({ error: this.errors.internal });
     }
